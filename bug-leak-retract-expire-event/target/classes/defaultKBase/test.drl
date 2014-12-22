@@ -1,0 +1,31 @@
+package org.drools.bug.leak
+
+import org.drools.bug.leak.SimpleFactWithExpire;
+import org.drools.bug.leak.SimpleFactWithoutExpire;
+
+declare SimpleFactWithExpire
+    @role( event )
+    @timestamp( dateEvt )
+    @expires( 5d )
+    @propertyReactive
+end
+
+declare SimpleFactWithoutExpire
+    @role( event )
+    @timestamp( dateEvt )
+    @propertyReactive
+end
+
+rule "WithExpire retract"
+    when
+        $event : SimpleFactWithExpire()
+    then
+        retract($event);
+end
+
+rule "WithoutExpire retract"
+    when
+        $event : SimpleFactWithoutExpire()
+    then
+        retract($event);
+end
