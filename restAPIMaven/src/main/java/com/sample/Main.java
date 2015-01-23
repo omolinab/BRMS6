@@ -11,6 +11,7 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.task.TaskService;
 import org.kie.api.task.model.Content;
 import org.kie.api.task.model.Task;
+import org.kie.api.task.model.TaskSummary;
 import org.kie.services.client.api.RemoteRestRuntimeEngineFactory;
 import org.kie.services.client.api.command.RemoteRuntimeEngine;
 
@@ -110,16 +111,47 @@ public class Main {
 		KieSession kieSession = engine.getKieSession();
 		TaskService taskService = engine.getTaskService();
 
-		HashMap<String, Object> params = new HashMap<String, Object>();
+		/*HashMap<String, Object> params = new HashMap<String, Object>();
 		Person person = new Person();
-		person.setName(Main.USER);
+		person.setName("Oscar");
 		params.put("po", person);
 
 		ProcessInstance pi = kieSession.startProcess(PROCESS_ID, params);
 
-		Task task = taskService.getTaskById(taskService.getTasksByProcessInstanceId(pi.getId()).get(0));
+		long procId = pi.getId();
+
+		List<TaskSummary> tasks = taskService.getTasksAssignedAsPotentialOwner(Main.USER, "en-UK");
+
+        long taskId = -1;
+        for (TaskSummary task : tasks) {
+          if (task.getProcessInstanceId() == procId) {
+            taskId = task.getId();
+          }
+        }
+
+        if (taskId == -1) {
+          throw new IllegalStateException("Unable to find task for " + Main.USER + " in process instance " + procId);
+        }
+        
+		System.out.println("Task Data-0:" + taskService.getTaskContent(taskId));
+
+		taskService.start(taskId, Main.USER);
+		taskService.complete(taskId, Main.USER, null);*/
+
+		long taskId = 19;
+		System.out.println("Task start with id:" + taskId);
+		//Task task = taskService.getTaskById(taskId);
+		//System.out.println("Task Data-1:" + task.getTaskData().getDocumentType());
+		System.out.println("Task Data-2:" + taskService.getTaskContent(taskId));
+		Person input = (Person)taskService.getTaskContent(taskId).get("po_in");
+		System.out.println("task input Name:" + input.getName());
+		System.out.println("task input Surname:" + input.getSurname());
+
+		/*Task task = taskService.getTaskById(taskService.getTasksByProcessInstanceId(pi.getId()).get(0));
 		Content content = taskService.getContentById(task.getTaskData().getDocumentContentId());
-		System.out.println("Task Data:" + task.getTaskData());
+		System.out.println("Task:" + task);
+		System.out.println("Task Data:" + task.getTaskData().getDocumentType());
+		System.out.println("Task Data-2:" + taskService.getTaskContent(task.getId()));
 		System.out.println("Content:" + content.getContent());
 
 		Object unmarshalledObject = ContentMarshallerHelper.unmarshall(content.getContent(), null);
@@ -130,10 +162,13 @@ public class Main {
 		}
 		Map<String, Object> result = (Map<String, Object>) unmarshalledObject;
 		System.out.println("Result:" + result);
-		Person input = (Person) result.get("po");
-		System.out.println("task input:" + input.getName());
+		//Person input = (Person) result.get("po");
+		Person input = (Person)taskService.getTaskContent(task.getId()).get("po_in");
+		System.out.println("task input:" + input.getName());*/
 
-		taskService.start(taskService.getTasksByProcessInstanceId(pi.getId()).get(0), Main.USER);
-		taskService.complete(taskService.getTasksByProcessInstanceId(pi.getId()).get(0), Main.USER, null);
+		//System.out.println("Task Data-3:" + taskService.getTaskContent(task.getId()));
+		
+		/*taskService.start(taskService.getTasksByProcessInstanceId(pi.getId()).get(0), Main.USER);
+		taskService.complete(taskService.getTasksByProcessInstanceId(pi.getId()).get(0), Main.USER, null);*/
 	}
 }
