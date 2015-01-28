@@ -5,9 +5,11 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 /**
@@ -27,7 +29,8 @@ public class RestClientSimple {
 		System.out.println("Starting process instance: " + DEPLOYMENT_ID);
 		System.out.println();
 		// start a process instance with no variables.
-		startProcess();
+		//startProcess();
+		getProcessInstanceDetails("2");
 		System.out.println();
 		System.out.println("Completed process instance: " + DEPLOYMENT_ID);
 	}
@@ -47,6 +50,20 @@ public class RestClientSimple {
 	}
 
 	/**
+	 * Start a process using the rest api start call, no map variables passed.
+	 *
+	 * @throws Exception
+	 */
+	public static void getProcessInstanceDetails(String processId) throws Exception {
+		String newInstanceUrl = BASE_URL + "runtime/" + DEPLOYMENT_ID + "/process/instance/" + processId;
+		String dataFromService = getDataFromService(newInstanceUrl, "GET");
+		System.out.println("newInstanceUrl:["+newInstanceUrl+"]");
+		System.out.println("--------");
+		System.out.println(dataFromService);
+		System.out.println("--------");
+	}
+
+	/**
 	 * Call service (GET) with no params.
 	 *
 	 * @param urlpath Rest API call.
@@ -59,7 +76,7 @@ public class RestClientSimple {
 		return getDataFromService(urlpath, method, null, false);
 	}
 	
-	private static void doAuthorization2( String url, HttpClient httpclient, PostMethod method) {
+	private static void doAuthorization2( String url, HttpClient httpclient, HttpMethodBase method) {
 		httpclient.getState().setCredentials(
 				new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM),
 				new UsernamePasswordCredentials(username, password)
@@ -83,8 +100,15 @@ public class RestClientSimple {
 		httpclient.getHttpConnectionManager().getParams().setConnectionTimeout(3000);
 		httpclient.getHttpConnectionManager().getParams().setSoTimeout(3000);
 		httpclient.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-		PostMethod theMethod = null;
-		theMethod = new PostMethod(urlpath);
+		
+		HttpMethodBase theMethod = null;
+		if (method.equals("GET")) {
+			theMethod = new GetMethod(urlpath); 
+		} else {
+			theMethod = new PostMethod(urlpath);
+		}
+		/*GetMethod getMethod = null;
+		PostMethod theMethod1 = null;*/
 		theMethod.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 		doAuthorization2(urlpath,httpclient, theMethod);
 		try {
@@ -97,7 +121,7 @@ public class RestClientSimple {
 			Map<String, Object> results = new HashMap<String, Object>();
 			if (responseCode >= 200 && responseCode < 300) {
 				result = theMethod.getResponseBodyAsString();
-				System.out.println("Ssuccessfully completed :[" + result+"]");
+				System.out.println("Successfully completed :[" + result+"]");
 			} else {
 				if (handleException) {
 					System.out.println("handleException responseCode:["+responseCode+"] theMethod.getResponseBodyAsString():["+theMethod.getResponseBodyAsString()+"] urlStr:["+urlStr+"]");

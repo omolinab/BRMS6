@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Build-Timestamp: 
+Implementation-Title: jBPM :: Sample Maven Project
+Implementation-Version: 1.0.0-SNAPSHOT
+Os-Version: 3.17.8-200.fc20.x86_64+debug
+Built-By: omolinab
+Specification-Vendor: JBoss by Red Hat
+Created-By: Maven Integration for Eclipse
+Os-Name: Linux
+Implementation-URL: http://www.jboss.org/jboss-integration-platform-pa
+ rent/ip-parent/jbpm-example
+Java-Vendor: Sun Microsystems Inc.
+Implementation-Vendor: JBoss by Red Hat
+Scm-Revision: 
+Implementation-Vendor-Id: com.sample
+Scm-Url: http://github.com/jboss/jboss-parent-pom/jboss-integration-pl
+ atform-parent/ip-parent/jbpm-example
+Java-Version: 1.6.0_45
+Build-Jdk: 1.6.0_45
+Scm-Connection: scm:git:git@github.com:jboss/jboss-parent-pom.git/jbos
+ s-integration-platform-parent/ip-parent/jbpm-example
+Os-Arch: amd64
+Specification-Title: jBPM :: Sample Maven Project
+Specification-Version: 1.0.0-SNAPSHOT
+
