@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.jbpm.formModeler.api.model.Field;
 import org.jbpm.formModeler.api.model.Form;
+import org.jbpm.formModeler.core.processing.FormProcessor;
 import org.jbpm.formModeler.core.processing.FormStatusData;
 import org.jbpm.formModeler.extended.combos.DependentComboValuesProvider;
 import org.jbpm.formModeler.extended.combos.DependentComboValuesProviderManager;
@@ -39,7 +40,7 @@ public class DependentCombosProcessor extends FormChangeProcessor {
                 return response;
             }
 
-            FormStatusData statusData = formProcessor.read(form, context.getNamespace());
+            FormStatusData statusData = formProcessor.read( form, context.getNamespace() );
 
             Collection fieldNames = getEvaluableFields();
             for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
@@ -54,6 +55,8 @@ public class DependentCombosProcessor extends FormChangeProcessor {
 
                     List result = new ArrayList(  );
 
+                    boolean found = false;
+
                     DependentComboValuesProvider provider = providerManager.getProvider( providerId );
                     if (provider != null) {
 
@@ -64,12 +67,14 @@ public class DependentCombosProcessor extends FormChangeProcessor {
                                 value[0] = key;
                                 value[1] = combovalues.get( key );
                                 value[2] = key.equals( currentValue );
+                                if ( key.equals( currentValue ) ) found = true;
                                 result.add( value );
                             }
                         }
                     }
-
-                    response.addInstruction( new SetListValuesInstruction( field.getFieldName(), result ) );
+                    if (!found) formProcessor.modify( form, context.getNamespace(), fieldName, "" );
+                    String inputName = context.getNamespace() + FormProcessor.NAMESPACE_SEPARATOR + form.getId() + FormProcessor.NAMESPACE_SEPARATOR + field.getFieldName();
+                    response.addInstruction( new SetListValuesInstruction( inputName, result ) );
                 }
             }
         } catch (Exception e) {
