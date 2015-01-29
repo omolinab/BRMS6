@@ -46,7 +46,7 @@ public class DependentCombosProcessor extends FormChangeProcessor {
             for (Iterator iterator = fieldNames.iterator(); iterator.hasNext();) {
                 String fieldName = (String) iterator.next();
                 Field field = form.getField(fieldName);
-                if (DependentCombo.class.getName().equals( field.getCustomFieldType() )) {
+                if (field.getFieldType().getCode().equals( "CustomInput" ) && DependentCombo.class.getName().equals( field.getCustomFieldType() )) {
                     String rootField = field.getParam1();
                     String providerId = field.getParam2();
 
