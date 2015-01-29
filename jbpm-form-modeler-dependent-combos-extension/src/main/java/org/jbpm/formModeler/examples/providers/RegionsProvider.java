@@ -28,9 +28,9 @@ public class RegionsProvider implements DependentComboValuesProvider {
 
         country = new HashMap<String, String>(  );
 
-        country.put( "av", "Aveiro" );
-        country.put( "st", "Setubal" );
-        country.put( "pt", "Portalegre" );
+        country.put( "av", "Região de Aveiro" );
+        country.put( "al", "Algarve" );
+        country.put( "av", "Ave" );
         regions.put( "pt", country );
     }
 
