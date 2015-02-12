@@ -2,15 +2,12 @@ package com.sample;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.jbpm.services.task.impl.model.TaskImpl;
-import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessContext;
-import org.kie.api.runtime.rule.Variable;
 import org.kie.api.task.TaskService;
 import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Task;
@@ -24,7 +21,7 @@ public class UserUtils {
 
 	public static void main(String[] args) throws Exception {
 
-
+		System.out.println("UsersUtils main() method..."); 
 /*        
         InternalTaskService taskService = (InternalTaskService) runtime.getTaskService();
 
@@ -40,26 +37,36 @@ public class UserUtils {
         ppl.setBusinessAdministrators(lle);        
 */
 		
-/**/
+/*
 		NodeInstance ni = null;
 		ProcessContext kcontext = null;
 		WorkItemNodeInstance WINI = null;
-		long wini = 0;
 		RuntimeEngine re = null;
+		KieSession ks = null;
 		
-		TaskService taskService = re.getTaskService();
+        InternalTaskService taskService = (InternalTaskService) re.getTaskService();
+		long wini = ((WorkItemNodeInstance)kcontext.getNodeInstance()).getWorkItemId();
 		Task task = taskService.getTaskByWorkItemId(wini);
 
 		taskService.getTasksByProcessInstanceId(kcontext.getProcessInstance().getId());
-		
-		
-        List<OrganizationalEntity> businessAdmins = new ArrayList<OrganizationalEntity>();
+*/        
+
+	}
+	
+	public static void helloWorld() {
+		System.out.println("Hello world !!!"); 
+	}
+	
+	public static boolean setBussinessAdministrator(Task task, String userId) {
+
+		// userId = "john"
+		List<OrganizationalEntity> businessAdmins = new ArrayList<OrganizationalEntity>();
         User user = TaskModelProvider.getFactory().newUser();
-        ((InternalOrganizationalEntity) user).setId("john");
+        ((InternalOrganizationalEntity) user).setId(userId);
         businessAdmins.add(user);
         businessAdmins.addAll(task.getPeopleAssignments().getBusinessAdministrators());
         ((InternalPeopleAssignments) task.getPeopleAssignments()).setBusinessAdministrators(businessAdmins);
-/**/        
-
+		
+		return true;
 	}
 }
