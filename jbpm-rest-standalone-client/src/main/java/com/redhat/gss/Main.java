@@ -21,13 +21,16 @@ public class Main {
 	/*
 		Set the parameters accoring your installation	 
 	*/
-	private static final String DEPLOYMENT_ID = "org.redhat:sampleProject:1.0";
-	//private static final String APP_URL = "http://localhost:8080/business-central/";
-	private static final String APP_URL = "http://192.168.1.101:8080/business-central/";
-	private static final String USER = "erics";
-	private static final String PASSWORD = "bpmsuite";
+	private static final String DEPLOYMENT_ID = "org.kie.example:project1:1.0";
+	private static final String APP_URL = "http://localhost:8080/business-central/";
+	private static final String USER = "bpmsAdmin";
+	private static final String PASSWORD = "admin@123";
 
 	public static void main( String[] args ) throws MalformedURLException {
+		accessServerTasks();
+	}
+	
+	public static void accessServerTasks() throws MalformedURLException {
 		URL url = new URL(APP_URL);
 		// create a factory using the installation parameters
 		RemoteRestRuntimeFactory factory = new RemoteRestRuntimeFactory(DEPLOYMENT_ID, url, USER, PASSWORD);
@@ -50,5 +53,6 @@ public class Main {
 				System.out.println("---------------");
 			}
 		}
-	}   
+	}
+	
 }
