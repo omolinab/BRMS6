@@ -1,0 +1,229 @@
+package com.sample
+ 
+import com.sample.DroolsTest.Message;
+
+import com.sample.tests.*;
+import java.util.ArrayList;
+import java.util.List;
+
+//declare any global variables here
+global com.sample.tests.PolicyRuleResult result;
+//global com.ins.PolicyProduct policyProd;
+ 
+//-----------------------------------------------
+// Issue Test : runIssueTest()
+rule "Determine if any one of coverages are eligible for Issue"
+    salience 100
+    when
+        $policy : Policy()
+        exists ($coverage : Coverage(eligible == true) from $policy.coverages)
+    then
+        result.setEligible(Boolean.TRUE);
+ 
+end
+ 
+rule "Determine if all of coverages are eligible for Issue"
+    salience 99
+    when
+        $policy : Policy()
+        not (exists(Coverage(eligible == false) from $policy.coverages))
+ 
+    then
+        result.setAllCoveragesAreEligible(Boolean.TRUE);
+ 
+end
+ 
+rule "Determine if agent information captured is valid"
+    salience 98
+    when
+        $policy : Policy( agents contains "Bill Smith")
+ 
+    then
+        result.setAgentInformationValid(Boolean.TRUE);
+ 
+end
+ 
+rule "Determine if product can be sold in the specific state"
+    salience 97
+    when
+        $policyProd : PolicyProduct()
+        Policy(issueState memberOf  $policyProd.states)
+    then
+        result.setApprovedState(Boolean.TRUE);
+ 
+end
+ 
+rule "Check out the soundex function of Drools"
+    // check if any insured name matches a particular pattern
+    salience 96
+    when
+        $policy : Policy()
+        exists ($coverage : Coverage(insured.firstName soundslike 'Elizabeth') from $policy.coverages)
+    then
+        result.addSoundMessage("Sound Ex Works!");
+ 
+end
+ 
+rule "Check out the soundex function of Drools - minor change"
+    // check if any insured name matches a particular pattern with a minor variation
+    salience 95
+    when
+        $policy : Policy()
+        $coverage : Coverage(insured.firstName soundslike 'Elizabeth') from $policy.coverages
+    then
+        result.addSoundMessage("Sound Ex Works!");
+ 
+end
+ 
+rule "Check out the collect function of Drools and collect functionality diff from function"
+    salience 94
+    when
+        $policy : Policy()
+        $coverages : ArrayList(size == 2)
+            from collect($coverage : Coverage(insured.firstName soundslike 'Elizabeth') from $policy.coverages)
+    then
+        result.setSoundexWorksCollect(Boolean.TRUE);
+end
+ 
+rule "Check if the coverages are valid and satisfy gender, age, faceamount validation rules"
+    salience 93
+    //no-loop true
+    when
+        $policy : Policy()
+        $coverage : Coverage( (faceAmount < 50000 || faceAmount > 250000) ||
+                                (   (insured.gender == "M" && (insured.age < 25 || insured.age > 65))
+                                    ||
+                                    (insured.gender == "F" && (insured.age < 18 || insured.age > 65))
+                                )
+                            )
+            from $policy.coverages
+    then
+        $coverage.setEligible(false);
+        //update($policy); #Point to be noted Infinite Loop Refer: http://www.mail-archive.com/rules-users@lists.jboss.org/msg07671.html
+end
+ 
+rule "Return value identifier sample"
+    salience 92
+    //no-loop true
+    when
+        $policy : Policy()
+        $coverage1: Coverage (faceAmount == 250000, insured.gender == "F", $age : insured.age) from $policy.coverages
+        $coverage2: Coverage (insured.gender == "F", insured.age == ($age+15)) from $policy.coverages
+    then
+        result.setRetIdentifier(Boolean.TRUE);
+        //update($policy); #Point to be noted Infinite Loop Refer: http://www.mail-archive.com/rules-users@lists.jboss.org/msg07671.html
+end
+ 
+rule "Compute the total and average faceamount per coverage"
+    salience 91
+    when
+        $policy : Policy()
+        $total : Number()
+        from accumulate ( $coverage: Coverage($amt : faceAmount) from $policy.coverages,
+                            init (double total =0;),
+                            action (total += $amt;),
+                            reverse(total -= $amt;),
+                            result(total)
+                        )
+    then
+        result.setTotalFaceAmount(new Integer($total.intValue()));
+end
+ 
+rule "Compute the total in a simpler fashion"
+    salience 90
+    when
+        $policy : Policy()
+        $total : Number()
+        from accumulate ( $coverage: Coverage($amt : faceAmount) from $policy.coverages,
+                            sum($amt)
+                        )
+    then
+        result.setTotalFaceAmountSimp(new Integer($total.intValue()));
+end
+ 
+rule "Compute the average faceamount per coverage"
+    salience 89
+    when
+        $policy : Policy()
+        $total : Number()
+        from accumulate ( $coverage: Coverage($amt : faceAmount) from $policy.coverages,
+                            average($amt)
+                        )
+    then
+        result.setAverageFaceAmount(new Double($total.doubleValue()));
+end
+ 
+query "Get Insured details for the policy"
+    $policy : Policy()
+    $coverages : Coverage($insured: insured ) from $policy.coverages
+end
+
+//-----------------------------------------------
+// Collect List Example : runCollectListExample()
+rule "Platinum Customer"
+salience 100
+lock-on-active true
+	when
+		c : Customer()
+  		items : List( size > 5 ) from collect( Stocks( quantity > 10 ) from c.stocks )
+ 	then
+  		c.setCustType("Platinum");
+        System.out.println("Customer : " + c.getCustId() + " is a Platinum Customer");
+        update(c);
+end
+
+rule "Gold Customer"
+salience 50
+lock-on-active true
+	when
+     	c : Customer()
+  		items : List( size > 3 && size < 5) from collect( Stocks( quantity > 10 ) from c.stocks )
+ 	then
+  		c.setCustType("Gold");
+        System.out.println("Customer : " + c.getCustId() + " is a Gold Customer");
+        update(c);
+end
+
+//------------------------------
+// Hello World : runHelloWorld()
+rule "Hello World"
+    when
+        m : Message( status == Message.HELLO, myMessage : message )
+    then
+        System.out.println( myMessage );
+        m.setMessage( "Goodbye cruel world" );
+        m.setStatus( Message.GOODBYE );
+        update( m );
+end
+
+rule "GoodBye"
+    when
+        Message( status == Message.GOODBYE, myMessage : message )
+    then
+        System.out.println( myMessage );
+end
+
+//------------------------------
+// Case 01475814 : runCase01475814()
+rule "test not statement in DRL"
+	when
+		$p: PrimeTransaction( )
+		$list : java.util.Collection( ) from collect( $pTt:PrimeTransaction( name =="joseph", ($pTt == Reconcilation.pTransactionObj) ) )
+	then
+		System.out.println ("Test not is working..." + $list);
+end
+
+/*rule "test not statement in DRL"
+	when
+		$p: PrimeTransaction( )
+		Reconcilation($pTransactionObj:pTransactionObj)
+		$list : java.util.Collection( ) from collect 
+			( $pTt:PrimeTransaction(
+				name =="joseph",
+				 $pTt == $pTransactionObj
+				)
+			)
+	then
+		System.out.println ("Test not is working  " + $p);
+end*/
+
