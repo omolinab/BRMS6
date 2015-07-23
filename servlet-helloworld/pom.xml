@@ -14,7 +14,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.as.quickstarts</groupId>
-    <artifactId>jboss-as-servlet</artifactId>
+    <artifactId>servlet-helloworld</artifactId>
     <version>7.1.2-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>JBoss AS Quickstarts: Servlet</name>
@@ -105,6 +105,11 @@
             <groupId>org.jboss.spec.javax.ejb</groupId>
             <artifactId>jboss-ejb-api_3.1_spec</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.redhat.gss</groupId>
+        	<artifactId>business-logic</artifactId>
+        	<version>1.0</version>
         </dependency>
     </dependencies>
 

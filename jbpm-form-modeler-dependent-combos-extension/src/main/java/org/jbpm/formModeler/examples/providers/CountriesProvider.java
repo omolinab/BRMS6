@@ -5,12 +5,19 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
+import org.jbpm.formModeler.api.client.FormRenderContext;
+import org.jbpm.formModeler.api.client.FormRenderContextManager;
 import org.jbpm.formModeler.api.model.RangeProvider;
 
 @Dependent
 public class CountriesProvider implements RangeProvider {
-    Map<String, String> countries = new HashMap<String, String>(  );
+
+    @Inject
+    FormRenderContextManager formRenderContextManager;
+
+	Map<String, String> countries = new HashMap<String, String>(  );
 
     @PostConstruct
     protected void init() {
@@ -26,6 +33,20 @@ public class CountriesProvider implements RangeProvider {
 
     @Override
     public Map<String, String> getRangesMap( String s ) {
+        /*System.out.println("s: " + s);
+        FormRenderContext rootcontext = formRenderContextManager.getRootContext(s);
+        System.out.println("rootcontext: " + rootcontext);
+        for (String key : rootcontext.getInputData().keySet()) {
+            System.out.println("key :" + key);
+            System.out.println("value : " + rootcontext.getInputData().get(key));
+        }
+        FormRenderContext formcontext = formRenderContextManager.getFormRenderContext(s);
+        System.out.println("formcontext: " + formcontext);
+        for (String key : formcontext.getInputData().keySet()) {
+            System.out.println("key :" + key);
+            System.out.println("value : " + formcontext.getInputData().get(key));
+        }
+*/
         return countries;
     }
 }

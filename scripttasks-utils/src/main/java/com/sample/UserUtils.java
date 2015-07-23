@@ -53,8 +53,17 @@ public class UserUtils {
 
 	}
 	
-	public static void helloWorld() {
-		System.out.println("Hello world !!!"); 
+	public static String helloWorld() {
+
+		ProcessContext kcontext = null;
+		org.kie.api.runtime.manager.RuntimeEngine runtime = (org.kie.api.runtime.manager.RuntimeEngine)kcontext.getKieRuntime();
+
+		System.out.println("workItemId: " + ((org.jbpm.workflow.instance.node.WorkItemNodeInstance)kcontext.getNodeInstance()).getWorkItemId());
+		System.out.println("taskService: " + (org.kie.internal.task.api.InternalTaskService) ((org.kie.api.runtime.manager.RuntimeEngine)kcontext.getKieRuntime()).getTaskService());
+		System.out.println("task : " + (org.kie.internal.task.api.InternalTaskService) ((org.kie.api.runtime.manager.RuntimeEngine)kcontext.getKieRuntime()).getTaskService().getTaskByWorkItemId(((org.jbpm.workflow.instance.node.WorkItemNodeInstance)kcontext.getNodeInstance()).getWorkItemId()));
+		
+		System.out.println("Hello world !!!");
+		return "Hello world method executed!!!";
 	}
 	
 	public static boolean setBussinessAdministrator(Task task, String userId) {

@@ -2,6 +2,7 @@ package com.sample;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +21,20 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Base64.InputStream;
+//import org.jbpm.services.task.LifeCycleBaseTest;
+import org.jbpm.services.task.impl.model.PeopleAssignmentsImpl;
+import org.jbpm.services.task.impl.model.TaskImpl;
+import org.jbpm.services.task.impl.model.UserImpl;
 import org.jbpm.services.task.utils.ContentMarshallerHelper;import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.task.TaskService;
 import org.kie.api.task.model.Content;
+import org.kie.api.task.model.OrganizationalEntity;
 import org.kie.api.task.model.Task;
 import org.kie.api.task.model.TaskSummary;
+import org.kie.api.task.model.User;
+import org.kie.internal.task.api.InternalTaskService;
+import org.kie.internal.task.api.TaskModelProvider;
 import org.kie.services.client.api.RemoteRestRuntimeEngineFactory;
 import org.kie.services.client.api.command.RemoteRuntimeEngine;
 import org.kie.services.client.serialization.JaxbSerializationProvider;
@@ -33,6 +42,11 @@ import org.kie.services.client.serialization.jaxb.impl.JaxbCommandResponse;
 import org.kie.services.client.serialization.jaxb.impl.JaxbCommandsRequest;
 import org.kie.services.client.serialization.jaxb.impl.JaxbCommandsResponse;
 import org.kie.services.client.serialization.jaxb.impl.task.JaxbTaskResponse;
+import org.kie.internal.task.api.model.InternalOrganizationalEntity;
+import org.kie.internal.task.api.model.InternalPeopleAssignments;
+
+import com.redhat.gss.Inject;
+import com.redhat.gss.ProcessDescriptionRepository;
 
 /**
  * This is a very simple Rest Client to test against a running instance of the business-central. You can parameterize - the
@@ -48,6 +62,41 @@ public class Main {
 	public static void main(String[] args) throws MalformedURLException, InterruptedException {
 
 
+/**/        
+        InternalTaskService taskService = (InternalTaskService) runtime.getTaskService();
+
+        long taskId0 = 0;
+        TaskImpl task = (TaskImpl)taskService.getTaskById(taskId0);//retrieving task
+
+        PeopleAssignmentsImpl ppl = new PeopleAssignmentsImpl();
+        UserImpl ent = new UserImpl();
+        ent.setId("john");// new user adding to a task
+
+        List<OrganizationalEntity> lle = new ArrayList<OrganizationalEntity>();
+        lle.add(ent);
+        ppl.setBusinessAdministrators(lle);
+/**/
+        
+/**/
+        long taskId = task.getId();
+
+        List<OrganizationalEntity> potentialOwners = new ArrayList<OrganizationalEntity>(1);
+        User user0 = TaskModelProvider.getFactory().newUser();
+        ((InternalOrganizationalEntity) user0).setId("Jabba Hutt");
+        potentialOwners.add(user0);
+        taskService.nominate(taskId, "Darth Vader", potentialOwners);
+/**/        
+        
+/**/        
+        List<OrganizationalEntity> businessAdmins = new ArrayList<OrganizationalEntity>();
+        User user = TaskModelProvider.getFactory().newUser();
+        ((InternalOrganizationalEntity) user).setId("Administrator");
+        businessAdmins.add(user);
+        businessAdmins.addAll(task.getPeopleAssignments().getBusinessAdministrators());
+        ((InternalPeopleAssignments) task.getPeopleAssignments()).setBusinessAdministrators(businessAdmins);
+/**/        
+        
+        		
 		URL url = new URL(APP_URL);
 		
 		// create a factory for a given deploymentId

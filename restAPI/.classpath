@@ -29,7 +29,7 @@
 	<classpathentry kind="lib" path="/home/omolinab/REDHAT/BPM/ENTERPRISE/BRMS-Deployable-Libraries/BRMS-6.0.3/jboss-bpms-engine/jbpm-persistence-jpa-6.0.3-redhat-6.jar"/>
 	<classpathentry kind="lib" path="/home/omolinab/REDHAT/BPM/ENTERPRISE/BRMS-Deployable-Libraries/BRMS-6.0.3/jboss-bpms-engine/jbpm-runtime-manager-6.0.3-redhat-6.jar"/>
 	<classpathentry kind="lib" path="/home/omolinab/REDHAT/BPM/ENTERPRISE/BRMS-Deployable-Libraries/BRMS-6.0.3/jboss-bpms-engine/jbpm-shared-services-6.0.3-redhat-6.jar"/>
-	<classpathentry kind="lib" path="/home/omolinab/REDHAT/BPM/ENTERPRISE/BRMS-Deployable-Libraries/BRMS-6.0.3/jboss-bpms-engine/jbpm-test-6.0.3-redhat-6.jar"/>
+	<classpathentry kind="lib" path="/home/omolinab/REDHAT/BPM/ENTERPRISE/BRMS-Deployable-Libraries/BRMS-6.0.3/jboss-bpms-engine/jbpm-test-6.0.3-redhat-6.jar" sourcepath="/home/omolinab/.m2/repository/org/jbpm/jbpm-test/6.0.3-redhat-6/jbpm-test-6.0.3-redhat-6-sources.jar"/>
 	<classpathentry kind="lib" path="/home/omolinab/REDHAT/BPM/ENTERPRISE/BRMS-Deployable-Libraries/BRMS-6.0.3/jboss-bpms-engine/jbpm-workitems-6.0.3-redhat-6.jar"/>
 	<classpathentry kind="lib" path="/home/omolinab/REDHAT/BPM/ENTERPRISE/BRMS-Deployable-Libraries/BRMS-6.0.3/jboss-bpms-engine/kie-api-6.0.3-redhat-6.jar"/>
 	<classpathentry kind="lib" path="/home/omolinab/REDHAT/BPM/ENTERPRISE/BRMS-Deployable-Libraries/BRMS-6.0.3/jboss-bpms-engine/kie-aries-blueprint-6.0.3-redhat-6.jar"/>

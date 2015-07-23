@@ -13,8 +13,10 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
 import org.jbpm.formModeler.api.client.FormRenderContextManager;
 import org.jbpm.formModeler.core.fieldTypes.CustomFieldType;
+import org.jbpm.formModeler.core.processing.FormNamespaceData;
 import org.jbpm.formModeler.core.processing.FormProcessor;
 import org.jbpm.formModeler.core.processing.FormStatusData;
+import org.jbpm.formModeler.core.processing.formProcessing.NamespaceManager;
 import org.jbpm.formModeler.extended.combos.DependentComboValuesProvider;
 import org.jbpm.formModeler.extended.combos.DependentComboValuesProviderManager;
 import org.jbpm.formModeler.service.LocaleManager;
@@ -28,13 +30,13 @@ public class DependentCombo implements CustomFieldType {
     protected DependentComboValuesProviderManager comboValuesProviderManager;
 
     @Inject
-    protected FormRenderContextManager formRenderContextManager;
-
-    @Inject
     protected FormProcessor formProcessor;
 
     @Inject
     protected LocaleManager localeManager;
+
+    @Inject
+    protected NamespaceManager namespaceManager;
 
     @Override
     public String getDescription( Locale locale ) {
@@ -46,17 +48,22 @@ public class DependentCombo implements CustomFieldType {
         String result = "<div>";
 
         if (value != null) {
-            FormStatusData status = formProcessor.read(formRenderContextManager.getRootContext( namespace ).getForm(), namespace);
 
-            String rootField = params[0];
-            DependentComboValuesProvider provider = comboValuesProviderManager.getProvider( params[ 1 ] );
+            FormNamespaceData nsData = namespaceManager.getNamespace( fieldName );
 
-            String rootValue = ( String ) status.getCurrentValue( rootField );
+            if (nsData != null) {
+                FormStatusData status = formProcessor.read(nsData.getForm(), namespace); // el problema és que no li passo el field :S
 
-            Map<String, String> elements = provider.getValues( rootValue, localeManager.getCurrentLang() );
+                String rootField = params[0];
+                DependentComboValuesProvider provider = comboValuesProviderManager.getProvider( params[ 1 ] );
 
-            String stringValue = elements.get( value );
-            if (stringValue != null) result += stringValue;
+                String rootValue = ( String ) status.getCurrentValue( rootField );
+
+                Map<String, String> elements = provider.getValues( rootValue, localeManager.getCurrentLang() );
+
+                String stringValue = elements.get( value );
+                if (stringValue != null) result += stringValue;
+            }
         }
 
         result += "</div>";
@@ -66,40 +73,44 @@ public class DependentCombo implements CustomFieldType {
 
     @Override
     public String getInputHTML( Object value, String fieldName, String namespace, boolean required, boolean readonly, String... params ) {
-        String rootField = params[0];
-        DependentComboValuesProvider provider = comboValuesProviderManager.getProvider( params[ 1 ] );
-
         String theValue = ( String ) value;
 
         String str = "";
         try {
-            FormStatusData status = formProcessor.read(formRenderContextManager.getRootContext( namespace ).getForm(), namespace);
+            FormNamespaceData nsData = namespaceManager.getNamespace( fieldName );
 
-            String rootValue = ( String ) status.getCurrentValue( rootField );
+            if (nsData != null) {
+                FormStatusData status = formProcessor.read(nsData.getForm(), namespace); // el problema és que no li passo el field :S
 
-            Map<String, String> elements = null;
+                String rootField = params[0];
+                DependentComboValuesProvider provider = comboValuesProviderManager.getProvider( params[ 1 ] );
 
-            if (provider != null) elements = provider.getValues( rootValue, localeManager.getCurrentLang() );
-            if ( elements == null ) elements = new HashMap<String, String>(  );
+                String rootValue = ( String ) status.getCurrentValue( rootField );
 
-            Map<String, Object> context = new HashMap<String, Object>();
+                Map<String, String> elements = null;
 
-            context.put( "readonly", readonly );
-            context.put( "elements", elements );
-            context.put( "fieldName", fieldName );
-            context.put( "value", theValue);
+                if (provider != null) elements = provider.getValues( rootValue, localeManager.getCurrentLang() );
+                if ( elements == null ) elements = new HashMap<String, String>(  );
 
-            InputStream src = this.getClass().getResourceAsStream("input.ftl");
-            freemarker.template.Configuration cfg = new freemarker.template.Configuration();
-            BeansWrapper defaultInstance = new BeansWrapper();
-            defaultInstance.setSimpleMapWrapper(true);
-            cfg.setObjectWrapper(defaultInstance);
-            cfg.setTemplateUpdateDelay(0);
-            Template temp = new Template(fieldName, new InputStreamReader(src), cfg);
-            StringWriter out = new StringWriter();
-            temp.process(context, out);
-            out.flush();
-            str = out.getBuffer().toString();
+                Map<String, Object> context = new HashMap<String, Object>();
+
+                context.put( "readonly", readonly );
+                context.put( "elements", elements );
+                context.put( "fieldName", fieldName );
+                context.put( "value", theValue);
+
+                InputStream src = this.getClass().getResourceAsStream("input.ftl");
+                freemarker.template.Configuration cfg = new freemarker.template.Configuration();
+                BeansWrapper defaultInstance = new BeansWrapper();
+                defaultInstance.setSimpleMapWrapper(true);
+                cfg.setObjectWrapper(defaultInstance);
+                cfg.setTemplateUpdateDelay(0);
+                Template temp = new Template(fieldName, new InputStreamReader(src), cfg);
+                StringWriter out = new StringWriter();
+                temp.process(context, out);
+                out.flush();
+                str = out.getBuffer().toString();
+            }
         } catch (Exception e) {
             log.warn("Failed to process template for field '{}'", fieldName, e);
         }

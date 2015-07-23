@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Build-Timestamp: 
 Implementation-Title: jBPM :: Sample Maven Project
 Implementation-Version: 1.0.0-SNAPSHOT
-Os-Version: 3.17.8-200.fc20.x86_64+debug
+Os-Version: 3.19.3-200.fc21.x86_64
 Built-By: omolinab
 Specification-Vendor: JBoss by Red Hat
 Created-By: Maven Integration for Eclipse

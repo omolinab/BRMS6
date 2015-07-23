@@ -16,14 +16,14 @@ public class NotificationWorkItemHandler implements WorkItemHandler {
 		super();
 	}
 	
-	public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
-		throw new MyException();		
-/*
+	public void executeWorkItem2(WorkItem workItem, WorkItemManager manager) {
+//		throw new MyException();		
+
 		String from = (String) workItem.getParameter("From");
 		String to = (String) workItem.getParameter("To");
 		String message = (String) workItem.getParameter("Message");
 		String priority = (String) workItem.getParameter("Priority");
-*/
+
 		/*SignallingTaskHandlerDecorator pp;
 		new org.jbpm.process.workitem.rest.RESTWorkItemHandler();
 		org.drools.compiler.kie.util.CDIHelper pp1;*/
@@ -34,13 +34,33 @@ public class NotificationWorkItemHandler implements WorkItemHandler {
 		 */
 		/*EmailService service = ServiceRegistry.getInstance().getEmailService();
 		service.sendEmail(from, to, "Notification", message);*/
-//		System.out.println("From: " + from + " To: " + to + " Message: " + message + " Priority: " + priority);
+		System.out.println("From: " + from + " To: " + to + " Message: " + message + " Priority: " + priority);
 
 		/* 
 		 * Notify manager that work item has been completed.
 		 * The completeWorkItem() call completes the work item execution.
 		 */
-//		manager.completeWorkItem(workItem.getId(), null);
+		manager.completeWorkItem(workItem.getId(), null);
+	}
+
+	public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
+		new Thread(new Runnable() {
+
+		      public void run() {
+
+		        // The main thread with the parent element execution
+		    	  try {
+		    		System.out.println("Waiting...");
+					Thread.sleep(10000);
+		    		System.out.println("Finished.");
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		        }
+		    }).start();
+		
+		manager.completeWorkItem(workItem.getId(), null);
 	}
 
 	public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
